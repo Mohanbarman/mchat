@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    container_name: mchat-db
+    image: mysql/mysql-server:8.0.23
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: main
+      MYSQL_ROOT_HOST: "%"
+
+  redis:
+    container_name: mchat-redis
+    image: redis:6.2.5-alpine
+    restart: on-failure
+    command: redis-server --requirepass pass
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    ports:
+      - 6379:6379
