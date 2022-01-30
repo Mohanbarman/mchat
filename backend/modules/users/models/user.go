@@ -2,6 +2,7 @@ package users
 
 import (
 	uuid "github.com/satori/go.uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -34,4 +35,10 @@ func (user *UserModel) Transform() map[string]interface{} {
 		"created_at": user.CreatedAt,
 		"updated_at": user.UpdatedAt,
 	}
+}
+
+func (user *UserModel) SetPassword(password string) (err error) {
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	user.Password = string(hashedPasswordBytes)
+	return
 }

@@ -16,7 +16,12 @@ var unauthorizedErr = gin.H{
 	"code":    401,
 }
 
-func AuthMiddleware(jwtService *auth.JwtService, tokenType auth.TokenType, db *gorm.DB) gin.HandlerFunc {
+type AuthMiddleware struct {
+	Jwt *auth.JwtService
+	DB  *gorm.DB
+}
+
+func (a *AuthMiddleware) Validate(tokenType auth.TokenType) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -30,7 +35,7 @@ func AuthMiddleware(jwtService *auth.JwtService, tokenType auth.TokenType, db *g
 			c.JSON(http.StatusUnauthorized, unauthorizedErr)
 		}
 
-		sub, err := jwtService.ParseToken(token, tokenType)
+		sub, err := a.Jwt.ParseToken(token, tokenType)
 
 		if err != nil {
 			c.JSON(401, gin.H{
@@ -42,7 +47,7 @@ func AuthMiddleware(jwtService *auth.JwtService, tokenType auth.TokenType, db *g
 		}
 
 		u := user.UserModel{}
-		result := db.Find(&u, &user.UserModel{UUID: sub})
+		result := a.DB.Find(&u, &user.UserModel{UUID: sub})
 
 		if result.RowsAffected <= 0 {
 			c.JSON(401, gin.H{

@@ -9,6 +9,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Redis    RedisConfig    `mapstructure:"redis"`
 	Jwt      JwtConfig      `mapstructure:"jwt"`
+	SmtpOtp  SmtpConfig     `mapstructure:"smtp_otp"`
 }
 
 func New() (config *Config) {

@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -10,6 +11,7 @@ import (
 	"mchat.com/api/config"
 	dto "mchat.com/api/modules/auth/dto"
 	users "mchat.com/api/modules/users/models"
+	"mchat.com/api/utils"
 )
 
 type AuthService struct {
@@ -20,18 +22,21 @@ type AuthService struct {
 func (service *AuthService) Register(c *gin.Context) {
 	registerDto := c.MustGet("data").(*dto.RegisterDto)
 
-	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(registerDto.Password), 10)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to hash password"})
-		return
+	user := users.UserModel{
+		Email:  registerDto.Email,
+		Name:   registerDto.Name,
+		Status: registerDto.Name,
 	}
 
-	user := users.UserModel{
-		Email:    registerDto.Email,
-		Password: string(hashedPasswordBytes),
-		Name:     registerDto.Name,
-		Status:   registerDto.Name,
+	err := user.SetPassword(registerDto.Password)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"code":    http.StatusInternalServerError,
+			"message": "Interal server error",
+		})
+		return
 	}
 
 	if created := service.Db.Create(&user); created.Error != nil {
@@ -79,4 +84,70 @@ func (service AuthService) Login(c *gin.Context, jwtService *JwtService) {
 func (service *AuthService) GetMe(c *gin.Context) {
 	u := c.MustGet("user").(*users.UserModel)
 	c.JSON(200, u.Transform())
+}
+
+func (service *AuthService) SendResetPasswordMail(c *gin.Context, s *utils.MailClient, rdb *utils.RedisClient) {
+	data := c.MustGet("data").(*dto.ResetPasswordDTO)
+
+	user := users.UserModel{}
+	userRecord := service.Db.First(&user, &users.UserModel{Email: data.Email})
+
+	if userRecord.RowsAffected > 0 {
+		hash := utils.GenRandomString([]byte(user.UUID))
+		rdb.Set(hash, user.UUID, time.Minute*15)
+		fmt.Println(hash)
+		go s.SendMail([]string{data.Email}, "Test mail", fmt.Sprintf("localhost:8000/reset-password?id=%s", hash))
+	}
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"code":    200,
+		"message": "You will receive an email with reset password link if your email exists",
+	})
+}
+
+func (service *AuthService) ResetPassword(c *gin.Context, rdb *utils.RedisClient) {
+	data := c.MustGet("data").(*dto.ResetPasswordChangeDTO)
+
+	uuid, err := rdb.Get(data.Secret)
+
+	if err != nil {
+		c.JSON(200, gin.H{
+			"success": false,
+			"code":    400,
+			"message": "Reset password link expired please try again",
+		})
+		return
+	}
+
+	rdb.Remove(data.Secret)
+
+	user := users.UserModel{}
+
+	result := service.Db.First(&user, &users.UserModel{UUID: uuid.(string)})
+
+	if result.RowsAffected <= 0 {
+		c.JSON(200, gin.H{
+			"success": false,
+			"code":    400,
+			"message": "Reset password link expired please try again",
+		})
+	}
+
+	err = user.SetPassword(data.Password)
+	service.Db.Save(&user)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"code":    http.StatusInternalServerError,
+			"message": "Failed to set password",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"code":    http.StatusOK,
+		"message": "Password changed successfully",
+	})
 }
