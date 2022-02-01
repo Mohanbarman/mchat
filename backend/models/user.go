@@ -1,4 +1,4 @@
-package users
+package models
 
 import (
 	uuid "github.com/satori/go.uuid"
@@ -8,8 +8,8 @@ import (
 
 type UserModel struct {
 	gorm.Model
-	UUID           string `gorm:"column:unique"`
-	Email          string `gorm:"column:email;unique"`
+	UUID           string `gorm:"unique"`
+	Email          string `gorm:"email;unique;not null"`
 	Password       string
 	Name           string
 	Status         string

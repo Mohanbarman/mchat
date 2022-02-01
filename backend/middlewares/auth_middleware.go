@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"mchat.com/api/models"
 	auth "mchat.com/api/modules/auth/services"
-	user "mchat.com/api/modules/users/models"
 )
 
 var unauthorizedErr = gin.H{
@@ -46,8 +46,8 @@ func (a *AuthMiddleware) Validate(tokenType auth.TokenType) gin.HandlerFunc {
 			return
 		}
 
-		u := user.UserModel{}
-		result := a.DB.Find(&u, &user.UserModel{UUID: sub})
+		u := models.UserModel{}
+		result := a.DB.Find(&u, &models.UserModel{UUID: sub})
 
 		if result.RowsAffected <= 0 {
 			c.JSON(401, gin.H{

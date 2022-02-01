@@ -9,8 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
+	"mchat.com/api/models"
 	dto "mchat.com/api/modules/auth/dto"
-	users "mchat.com/api/modules/users/models"
 	"mchat.com/api/utils"
 )
 
@@ -22,7 +22,7 @@ type AuthService struct {
 func (service *AuthService) Register(c *gin.Context) {
 	registerDto := c.MustGet("data").(*dto.RegisterDto)
 
-	user := users.UserModel{
+	user := models.UserModel{
 		Email:  registerDto.Email,
 		Name:   registerDto.Name,
 		Status: registerDto.Name,
@@ -50,11 +50,11 @@ func (service *AuthService) Register(c *gin.Context) {
 func (service AuthService) Login(c *gin.Context, jwtService *JwtService) {
 	loginDto := c.MustGet("data").(*dto.LoginDto)
 
-	user := users.UserModel{}
+	user := models.UserModel{}
 
 	fmt.Println(loginDto, user)
 
-	service.Db.Find(&user, &users.UserModel{Email: loginDto.Email})
+	service.Db.Find(&user, &models.UserModel{Email: loginDto.Email})
 
 	if user.ID <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"email": []string{"email not found"}})
@@ -82,15 +82,15 @@ func (service AuthService) Login(c *gin.Context, jwtService *JwtService) {
 }
 
 func (service *AuthService) GetMe(c *gin.Context) {
-	u := c.MustGet("user").(*users.UserModel)
+	u := c.MustGet("user").(*models.UserModel)
 	c.JSON(200, u.Transform())
 }
 
 func (service *AuthService) SendResetPasswordMail(c *gin.Context, s *utils.MailClient, rdb *utils.RedisClient) {
 	data := c.MustGet("data").(*dto.ResetPasswordDTO)
 
-	user := users.UserModel{}
-	userRecord := service.Db.First(&user, &users.UserModel{Email: data.Email})
+	user := models.UserModel{}
+	userRecord := service.Db.First(&user, &models.UserModel{Email: data.Email})
 
 	if userRecord.RowsAffected > 0 {
 		hash := utils.GenRandomString([]byte(user.UUID))
@@ -122,9 +122,9 @@ func (service *AuthService) ResetPassword(c *gin.Context, rdb *utils.RedisClient
 
 	rdb.Remove(data.Secret)
 
-	user := users.UserModel{}
+	user := models.UserModel{}
 
-	result := service.Db.First(&user, &users.UserModel{UUID: uuid.(string)})
+	result := service.Db.First(&user, &models.UserModel{UUID: uuid.(string)})
 
 	if result.RowsAffected <= 0 {
 		c.JSON(200, gin.H{

@@ -2,9 +2,16 @@ package db
 
 import (
 	"gorm.io/gorm"
-	user_models "mchat.com/api/modules/users/models"
+	"mchat.com/api/models"
 )
 
 func RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&user_models.UserModel{})
+	m := []interface{}{
+		&models.UserModel{},
+		&models.ConversationModel{},
+		&models.FileModel{},
+		&models.MessageModel{},
+		&models.UserModel{},
+	}
+	db.AutoMigrate(m...)
 }
