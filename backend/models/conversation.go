@@ -14,6 +14,16 @@ type ConversationModel struct {
 	ToUser     UserModel
 }
 
+func (model *ConversationModel) Transform() map[string]interface{} {
+	return map[string]interface{}{
+		"id":         model.UUID,
+		"created_at": model.CreatedAt,
+		"updated_at": model.UpdatedAt,
+		"from_user":  model.FromUser.Transform(),
+		"to_user":    model.ToUser.Transform(),
+	}
+}
+
 func (model *ConversationModel) TableName() string {
 	return "conversations"
 }
