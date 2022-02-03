@@ -13,7 +13,7 @@ func Validate(s interface{}) gin.HandlerFunc {
 			c.JSON(400, gin.H{
 				"success": false,
 				"code":    400,
-				"data":    validation.FormatErrors(errors),
+				"errors":  validation.FormatErrors(errors),
 			})
 			c.Abort()
 			return

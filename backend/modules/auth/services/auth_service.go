@@ -78,7 +78,11 @@ func (service AuthService) Login(c *gin.Context, jwtService *JwtService) {
 	result["access_token"] = accessToken
 	result["refresh_token"] = refreshToken
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"code":    200,
+		"data":    result,
+	})
 }
 
 func (service *AuthService) GetMe(c *gin.Context) {
