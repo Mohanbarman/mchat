@@ -18,7 +18,7 @@ type WsController struct {
 	Config   *config.Config
 }
 
-func (ctrl *WsController) CreateConnection(manager *connection.ConnManager) gin.HandlerFunc {
+func (ctrl *WsController) CreateConnection(manager *connection.ConnStore) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		c, err := ctrl.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 

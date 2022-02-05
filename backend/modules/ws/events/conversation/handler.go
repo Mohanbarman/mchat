@@ -4,7 +4,7 @@ import (
 	"mchat.com/api/modules/ws/connection"
 )
 
-func HandleEvent(method string, payload interface{}, context *connection.Context, manager *connection.ConnManager) {
+func HandleEvent(method string, payload interface{}, context *connection.Context, manager *connection.ConnStore) {
 	controller := Controller{
 		Manager: manager,
 	}

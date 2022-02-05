@@ -13,7 +13,7 @@ type Event struct {
 	Payload interface{} `json:"payload"`
 }
 
-func HandleEvent(e *Event, ctx *connection.Context, manager *connection.ConnManager) {
+func HandleEvent(e *Event, ctx *connection.Context, manager *connection.ConnStore) {
 	action := strings.Split(e.Action, "/")
 
 	if len(action) < 2 {

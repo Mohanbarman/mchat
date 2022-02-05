@@ -5,12 +5,12 @@ import (
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
+	"mchat.com/api/lib/jwt"
 	"mchat.com/api/middlewares"
-	auth "mchat.com/api/modules/auth/services"
 	"mchat.com/api/modules/ws/connection"
 )
 
-func Init(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB) {
+func Init(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
 	router := rg.Group(prefix)
 
 	ctrl := WsController{
@@ -19,10 +19,9 @@ func Init(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB
 		Config:   config,
 	}
 	midd := middlewares.AuthMiddleware{
-		Jwt: &auth.JwtService{Config: &config.Jwt},
+		Jwt: &jwt.JwtService{Config: &config.Jwt},
 		DB:  db,
 	}
-	conManager := connection.NewManager()
 
-	router.GET("/connect", midd.Validate(auth.AccessToken), ctrl.CreateConnection(conManager))
+	router.GET("/connect", midd.Validate(jwt.AccessToken), ctrl.CreateConnection(wsStore))
 }

@@ -11,7 +11,7 @@ import (
 )
 
 type Controller struct {
-	Manager *connection.ConnManager
+	Manager *connection.ConnStore
 }
 
 // Send a new message to a user
