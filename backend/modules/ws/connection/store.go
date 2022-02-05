@@ -28,7 +28,7 @@ func (c *ConnStore) Remove(key uint) {
 	delete(c.connections, key)
 }
 
-func NewManager() *ConnStore {
+func NewStore() *ConnStore {
 	return &ConnStore{
 		connections: make(map[uint]*websocket.Conn),
 	}
