@@ -14,7 +14,7 @@ const (
 )
 
 type MessageModel struct {
-	gorm.Model
+	Base
 	UUID           string `gorm:"unique"`
 	Text           string `gorm:"type:TEXT"`
 	FileID         sql.NullInt64
@@ -31,6 +31,7 @@ func (model *MessageModel) BeforeCreate(scope *gorm.DB) (err error) {
 
 func (model *MessageModel) Transform() map[string]interface{} {
 	return map[string]interface{}{
+		"id":           model.ID,
 		"text":         model.Text,
 		"file_id":      model.FileID.Int64,
 		"conversation": model.Conversation.UUID,
