@@ -10,18 +10,23 @@ type HttpResponseStruct struct {
 	body   H
 }
 
-func (h *HttpResponseStruct) Data(data H) *HttpResponseStruct {
+func (h *HttpResponseStruct) Data(data interface{}) *HttpResponseStruct {
 	h.body["data"] = data
 	return h
 }
 
-func (h *HttpResponseStruct) Errors(e H) *HttpResponseStruct {
+func (h *HttpResponseStruct) Errors(e interface{}) *HttpResponseStruct {
 	h.body["errors"] = e
 	return h
 }
 
 func (h *HttpResponseStruct) Message(m string) *HttpResponseStruct {
 	h.body["message"] = m
+	return h
+}
+
+func (h *HttpResponseStruct) Page(p interface{}) *HttpResponseStruct {
+	h.body["page"] = p
 	return h
 }
 
