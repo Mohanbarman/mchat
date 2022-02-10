@@ -39,7 +39,7 @@ func HttpResponse(statusCode int) *HttpResponseStruct {
 		status: statusCode,
 		body: H{
 			"code":    statusCode,
-			"success": statusCode <= 400,
+			"success": statusCode < 400,
 		},
 	}
 }
