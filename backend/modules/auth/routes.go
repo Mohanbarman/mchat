@@ -14,10 +14,10 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 
 	jwtService := jwt.JwtService{Config: &config.Jwt}
 
-	authCtrl := AuthController{
+	authCtrl := Controller{
 		Config: config,
 		DB:     db,
-		Service: &AuthService{
+		Service: &Service{
 			Config: config,
 			Db:     db,
 		},
@@ -31,9 +31,9 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 		DB:  db,
 	}
 
-	router.POST("/login", middlewares.Validate(&LoginDto{}), authCtrl.Login())
-	router.POST("/register", middlewares.Validate(&RegisterDto{}), authCtrl.Register())
-	router.POST("/reset-password/send-mail", middlewares.Validate(&ResetPasswordDTO{}), authCtrl.SendResetPasswordMail())
+	router.POST("/login", authCtrl.Login())
+	router.POST("/register", authCtrl.Register())
+	router.POST("/reset-password/send-mail", authCtrl.SendResetPasswordMail())
 	router.GET("/me", authMiddleware.Validate(jwt.AccessToken), authCtrl.GetMe())
-	router.POST("/reset-password", middlewares.Validate(&ResetPasswordChangeDTO{}), authCtrl.ResetPassword())
+	router.POST("/reset-password", authCtrl.ResetPassword())
 }

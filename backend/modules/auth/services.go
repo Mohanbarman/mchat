@@ -12,12 +12,12 @@ import (
 	"mchat.com/api/models"
 )
 
-type AuthService struct {
+type Service struct {
 	Config *config.Config
 	Db     *gorm.DB
 }
 
-func (service *AuthService) Register(registerDto *RegisterDto) (result lib.H, e *lib.ServiceError) {
+func (service *Service) Register(registerDto *RegisterDto) (result lib.H, e *lib.ServiceError) {
 	user := models.UserModel{
 		Email:  registerDto.Email,
 		Name:   registerDto.Name,
@@ -40,7 +40,7 @@ func (service *AuthService) Register(registerDto *RegisterDto) (result lib.H, e 
 	return
 }
 
-func (service AuthService) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (result lib.H, e *lib.ServiceError) {
+func (service Service) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (result lib.H, e *lib.ServiceError) {
 	user := models.UserModel{}
 
 	records := service.Db.Find(&user, &models.UserModel{Email: loginDto.Email})
@@ -69,7 +69,7 @@ func (service AuthService) Login(loginDto *LoginDto, jwtService *jwt.JwtService)
 	return
 }
 
-func (service *AuthService) SendResetPasswordMail(dto *ResetPasswordDTO, s *lib.MailClient, rdb *lib.RedisClient) {
+func (service *Service) SendResetPasswordMail(dto *ResetPasswordDTO, s *lib.MailClient, rdb *lib.RedisClient) {
 	user := models.UserModel{}
 	userRecord := service.Db.First(&user, &models.UserModel{Email: dto.Email})
 
@@ -80,7 +80,7 @@ func (service *AuthService) SendResetPasswordMail(dto *ResetPasswordDTO, s *lib.
 	}
 }
 
-func (service *AuthService) ResetPassword(dto *ResetPasswordChangeDTO, rdb *lib.RedisClient) (result lib.H, e *lib.ServiceError) {
+func (service *Service) ResetPassword(dto *ResetPasswordChangeDTO, rdb *lib.RedisClient) (result lib.H, e *lib.ServiceError) {
 	uuid, err := rdb.Get(dto.Secret)
 
 	if err != nil {
