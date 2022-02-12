@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"mchat.com/api/lib"
 )
 
 type CursorPaginationDTO struct {
 	Cursor string `json:"cursor" form:"cursor"`
-	Limit  int    `json:"limit" form:"limit" binding:"required"`
+	Limit  string `json:"limit" form:"limit" binding:"number"`
 }
 
 // used to store records required for pagination
@@ -28,6 +29,7 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 	return func(db *gorm.DB) *gorm.DB {
 		rows := []records{}
 		cursor, e := decodeCursor(dto.Cursor)
+		limit := lib.MustGetInt(dto.Limit)
 
 		if e != nil {
 			(*err) = InvalidCursorErr
@@ -35,7 +37,6 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 		}
 
 		(*meta)["next"] = nil
-		(*meta)["limit"] = dto.Limit
 
 		if len(dto.Cursor) > 0 {
 			icursor, e := strconv.ParseInt(cursor, 10, 64)
@@ -44,19 +45,19 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 				return db
 			}
 			t := time.UnixMicro(icursor).UTC()
-			db.Session(&gorm.Session{}).Table(tableName).Where("created_at >= ?", t).Limit(dto.Limit + 1).Scan(&rows)
-			if len(rows) > dto.Limit {
-				(*meta)["next"] = encodeCursor(rows[dto.Limit].CreatedAt.UTC().UnixMicro())
+			db.Session(&gorm.Session{}).Table(tableName).Where("created_at >= ?", t).Limit(limit + 1).Scan(&rows)
+			if len(rows) > limit {
+				(*meta)["next"] = encodeCursor(rows[limit].CreatedAt.UTC().UnixMicro())
 			}
-			return db.Where("created_at >= ?", t).Limit(dto.Limit)
+			return db.Where("created_at >= ?", t).Limit(limit)
 		}
 
-		db.Session(&gorm.Session{}).Table(tableName).Limit(dto.Limit + 1).Scan(&rows)
-		if len(rows) > dto.Limit {
-			(*meta)["next"] = encodeCursor(rows[dto.Limit].CreatedAt.UTC().UnixMicro())
+		db.Session(&gorm.Session{}).Table(tableName).Limit(limit + 1).Scan(&rows)
+		if len(rows) > limit {
+			(*meta)["next"] = encodeCursor(rows[limit].CreatedAt.UTC().UnixMicro())
 		}
 
-		return db.Limit(dto.Limit)
+		return db.Limit(limit)
 	}
 }
 
