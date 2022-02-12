@@ -7,20 +7,24 @@ import (
 	"mchat.com/api/lib"
 	"mchat.com/api/lib/jwt"
 	"mchat.com/api/models"
+	"mchat.com/api/validation"
 )
 
-type AuthController struct {
+type Controller struct {
 	Config     *config.Config
 	DB         *gorm.DB
-	Service    *AuthService
+	Service    *Service
 	JwtService *jwt.JwtService
 	OtpSmtp    *lib.MailClient
 	Redis      *lib.RedisClient
 }
 
-func (ctrl *AuthController) Login() gin.HandlerFunc {
+func (ctrl *Controller) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		dto := c.MustGet("data").(*LoginDto)
+		dto := &LoginDto{}
+		if ok := validation.ValidateReq(&dto, c); !ok {
+			return
+		}
 
 		data, err := ctrl.Service.Login(dto, ctrl.JwtService)
 
@@ -32,16 +36,19 @@ func (ctrl *AuthController) Login() gin.HandlerFunc {
 	}
 }
 
-func (ctrl *AuthController) GetMe() gin.HandlerFunc {
+func (ctrl *Controller) GetMe() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := c.MustGet("user").(*models.UserModel)
 		lib.HttpResponse(200).Data(user.Transform()).Send(c)
 	}
 }
 
-func (ctrl *AuthController) Register() gin.HandlerFunc {
+func (ctrl *Controller) Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		dto := c.MustGet("data").(*RegisterDto)
+		dto := &RegisterDto{}
+		if ok := validation.ValidateReq(&dto, c); !ok {
+			return
+		}
 		result, err := ctrl.Service.Register(dto)
 
 		if err != nil {
@@ -52,17 +59,23 @@ func (ctrl *AuthController) Register() gin.HandlerFunc {
 	}
 }
 
-func (ctrl *AuthController) SendResetPasswordMail() gin.HandlerFunc {
+func (ctrl *Controller) SendResetPasswordMail() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		dto := c.MustGet("data").(*ResetPasswordDTO)
+		dto := &ResetPasswordDTO{}
+		if ok := validation.ValidateReq(&dto, c); !ok {
+			return
+		}
 		go ctrl.Service.SendResetPasswordMail(dto, ctrl.OtpSmtp, ctrl.Redis)
 		HttpSuccess[ResetPassEmailSentSucccess].Send(c)
 	}
 }
 
-func (ctrl *AuthController) ResetPassword() gin.HandlerFunc {
+func (ctrl *Controller) ResetPassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		dto := c.MustGet("data").(*ResetPasswordChangeDTO)
+		dto := &ResetPasswordChangeDTO{}
+		if ok := validation.ValidateReq(&dto, c); !ok {
+			return
+		}
 		_, err := ctrl.Service.ResetPassword(dto, ctrl.Redis)
 
 		if err != nil {
