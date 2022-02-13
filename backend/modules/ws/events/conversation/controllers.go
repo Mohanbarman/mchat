@@ -53,6 +53,8 @@ func (c *Controller) Send(payload interface{}, ctx *connection.Context) {
 		Text:           dto.Text,
 		ConversationID: conversation.ID,
 		Status:         models.MessageStatusSent,
+		FromUserID:     int(ctx.User.ID),
+		ToUserID:       int(toUser.ID),
 	}
 	ctx.DB.Create(&message)
 
@@ -92,7 +94,7 @@ func (c *Controller) Read(payload interface{}, ctx *connection.Context) {
 	otherUser := &models.UserModel{}
 	ctx.DB.Find(otherUser, otherUserID)
 
-	records = ctx.DB.Debug().Model(&models.MessageModel{}).Where("conversation_id = ? AND ?=?", conversation.ID, otherUserColumn, otherUserID).Update("status", models.MessageStatusReaded)
+	records = ctx.DB.Debug().Model(&models.MessageModel{}).Where("conversation_id = ? AND ?=?", conversation.ID, otherUserColumn, otherUserID).Update("status", models.MessageStatusSeen)
 	fmt.Println(records)
 
 	if con, err := c.Manager.Get(otherUser.ID); err == nil {

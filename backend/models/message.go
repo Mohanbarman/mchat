@@ -7,10 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
+// message status
 const (
 	MessageStatusSent      int = 0
 	MessageStatusDelivered int = 1
-	MessageStatusReaded    int = 2
+	MessageStatusSeen      int = 2
 )
 
 type MessageModel struct {
@@ -21,6 +22,10 @@ type MessageModel struct {
 	ConversationID uint
 	File           FileModel
 	Conversation   ConversationModel
+	FromUserID     int
+	ToUserID       int
+	FromUser       UserModel
+	ToUser         UserModel
 	Status         int
 }
 
@@ -31,10 +36,11 @@ func (model *MessageModel) BeforeCreate(scope *gorm.DB) (err error) {
 
 func (model *MessageModel) Transform() map[string]interface{} {
 	return map[string]interface{}{
-		"id":           model.ID,
-		"text":         model.Text,
-		"file_id":      model.FileID.Int64,
-		"conversation": model.Conversation.UUID,
+		"id":         model.ID,
+		"text":       model.Text,
+		"file_id":    model.FileID.Int64,
+		"created_at": model.CreatedAt,
+		"status":     model.Status,
 	}
 }
 

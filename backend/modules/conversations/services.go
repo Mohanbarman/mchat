@@ -18,8 +18,8 @@ func (s *Service) GetAll(dto *GetAllDTO, user *models.UserModel) (page lib.H, da
 	data = []map[string]interface{}{}
 
 	pageErr := 0
-	scope := pagination.CursorPaginate("conversations", &pageErr, &dto.CursorPaginationDTO, &page)
-	s.DB.Scopes(scope).Where("from_user_id = ? OR to_user_id = ?", user.ID, user.ID).Preload(clause.Associations).Find(&records)
+	scope := pagination.CursorPaginate("conversations", &pageErr, &dto.CursorPaginationDTO, &page, true)
+	s.DB.Scopes(scope).Where("from_user_id = ? OR to_user_id = ?", user.ID, user.ID).Preload(clause.Associations).Order("created_at desc").Find(&records)
 
 	if pageErr == pagination.InvalidCursorErr {
 		err = pageErr

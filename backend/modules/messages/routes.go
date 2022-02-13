@@ -12,7 +12,11 @@ import (
 func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
 	router := rg.Group(prefix)
 
-	ctrl := Controller{DB: db, Config: config}
+	ctrl := Controller{
+		DB:      db,
+		Config:  config,
+		Service: &Service{DB: db, WS: wsStore},
+	}
 
 	authMiddleware := middlewares.AuthMiddleware{
 		Jwt: &jwt.JwtService{Config: &config.Jwt},
