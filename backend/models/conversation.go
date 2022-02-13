@@ -19,8 +19,6 @@ func (model *ConversationModel) Transform() map[string]interface{} {
 		"id":         model.UUID,
 		"created_at": model.CreatedAt,
 		"updated_at": model.UpdatedAt,
-		"from_user":  model.FromUser.Transform(),
-		"to_user":    model.ToUser.Transform(),
 	}
 }
 
