@@ -25,7 +25,7 @@ const (
 	InvalidCursorErr = iota + 1
 )
 
-func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *map[string]interface{}) func(db *gorm.DB) *gorm.DB {
+func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *map[string]interface{}, isDesc bool) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		rows := []records{}
 		cursor, e := decodeCursor(dto.Cursor)
@@ -36,7 +36,11 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 			return db
 		}
 
-		(*meta)["next"] = nil
+		whereString := "created_at >= ?"
+
+		if isDesc {
+			whereString = "created_at <= ?"
+		}
 
 		if len(dto.Cursor) > 0 {
 			icursor, e := strconv.ParseInt(cursor, 10, 64)
@@ -45,11 +49,11 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 				return db
 			}
 			t := time.UnixMicro(icursor).UTC()
-			db.Session(&gorm.Session{}).Table(tableName).Where("created_at >= ?", t).Limit(limit + 1).Scan(&rows)
+			db.Session(&gorm.Session{}).Table(tableName).Where(whereString, t).Limit(limit + 1).Scan(&rows)
 			if len(rows) > limit {
 				(*meta)["next"] = encodeCursor(rows[limit].CreatedAt.UTC().UnixMicro())
 			}
-			return db.Where("created_at >= ?", t).Limit(limit)
+			return db.Where(whereString, t).Limit(limit)
 		}
 
 		db.Session(&gorm.Session{}).Table(tableName).Limit(limit + 1).Scan(&rows)
