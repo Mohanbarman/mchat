@@ -22,11 +22,11 @@ const (
 
 var HttpErrors = map[int]*lib.HttpResponseStruct{
 	EmailExistsErr: lib.HttpResponse(http.StatusBadRequest).Errors(lib.H{
-		"password": "Email already exists",
+		"email": "Email already exists",
 	}),
 	UserNotFoundErr: lib.HttpResponse(http.StatusNotFound).Message("User not found"),
 	EmailNotFoundErr: lib.HttpResponse(http.StatusNotFound).Errors(lib.H{
-		"email": "User not found",
+		"email": "Email doesn't exists",
 	}),
 	WrongPasswordErr: lib.HttpResponse(http.StatusBadRequest).Errors(lib.H{
 		"password": "Invalid credentials",

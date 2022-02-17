@@ -30,6 +30,7 @@ func (ctrl *Controller) Login() gin.HandlerFunc {
 
 		if err != nil {
 			HttpErrors[err.Code].Send(c)
+			return
 		}
 
 		lib.HttpResponse(200).Data(data).Send(c)
@@ -53,6 +54,7 @@ func (ctrl *Controller) Register() gin.HandlerFunc {
 
 		if err != nil {
 			HttpErrors[err.Code].Send(c)
+			return
 		}
 
 		lib.HttpResponse(200).Data(result).Send(c)

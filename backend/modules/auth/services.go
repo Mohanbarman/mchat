@@ -46,7 +46,7 @@ func (service Service) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (re
 	records := service.Db.Find(&user, &models.UserModel{Email: loginDto.Email})
 
 	if records.RowsAffected <= 0 {
-		e = lib.Error(UserNotFoundErr)
+		e = lib.Error(WrongPasswordErr)
 		return
 	}
 
