@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { ChakraProvider } from "@chakra-ui/react";
 import {MemoryRouter} from "react-router-dom";
 import { store } from "./redux/store";
-import { App } from "./app/app";
+import { App } from "./app";
 
 ReactDOM.render(
     <React.StrictMode>
