@@ -47,22 +47,26 @@ const Message: React.FC<IMessageProps> = (props) => {
     const direction = props.isMe ? "right" : "left";
     const bg = props.isMe ? "teal.100" : "teal.50";
 
+    console.log(props)
+
     return (
         <Box
             bg={bg}
             borderRadius="10px"
+            onClick={() => props.onClick(props.id)}
             padding="7px 10px"
             display="inline-block"
             float={direction}
             position="relative"
             boxShadow="#00000036 0px 1px 2px"
+            maxW="600px"
             {...{
                 [props.isMe ? "borderTopRightRadius" : "borderTopLeftRadius"]:
                     "0",
             }}
         >
-            <Text fontSize="0.9rem" fontWeight="medium">
-                {props.text}
+            <Text fontSize="0.9rem" fontWeight="medium" whiteSpace="pre-wrap">
+                    {props.text}
             </Text>
             <Box display="flex" justifyContent="flex-end">
                 <Text
