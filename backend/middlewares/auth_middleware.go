@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"mchat.com/api/lib"
 	"mchat.com/api/lib/jwt"
 	"mchat.com/api/models"
 )
@@ -26,10 +27,19 @@ func (a *AuthMiddleware) Validate(tokenType jwt.TokenType) gin.HandlerFunc {
 		authHeader := c.Request.Header.Get("Authorization")
 
 		if len(authHeader) == 0 {
-			c.JSON(http.StatusUnauthorized, unauthorizedErr)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, unauthorizedErr)
+			return
 		}
 
-		token := strings.Split(authHeader, " ")[1]
+		_token := strings.Split(authHeader, " ")
+		token := ""
+
+		if len(_token) == 2 {
+			token = _token[1]
+		} else {
+			lib.HttpResponse(401).Send(c)
+			return
+		}
 
 		if len(token) == 0 {
 			c.JSON(http.StatusUnauthorized, unauthorizedErr)

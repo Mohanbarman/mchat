@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
-	"mchat.com/api/models"
 	"mchat.com/api/modules/ws/connection"
 	"mchat.com/api/modules/ws/events"
 )
@@ -33,26 +32,11 @@ func (ctrl *WsController) CreateConnection(manager *connection.ConnStore) gin.Ha
 
 		defer c.Close()
 
-		user := ctx.MustGet("user").(*models.UserModel)
-
 		context := connection.Context{
 			Connection: c,
-			User:       user,
 			DB:         ctrl.DB,
 			Config:     ctrl.Config,
 		}
-
-		if con, err := manager.Get(user.ID); err == nil {
-			con.SendJSON(gin.H{
-				"event": "global/error",
-				"code":  "ANOTHER_LOGIN_DETECTED",
-			})
-			con.Close()
-		}
-
-		manager.Set(user.ID, c)
-
-		defer func() { manager.Remove(user.ID) }()
 
 		for {
 			_, message, err := c.ReadMessage()

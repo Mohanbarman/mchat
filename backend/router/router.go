@@ -13,9 +13,10 @@ import (
 
 func SetupRoutes(engine *gin.Engine, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
 	rg := engine.Group("/api")
+	wsrg := engine.Group("/ws")
 
 	auth.InitRoutes("/auth", rg, config, db)
 	conversations.InitRoutes("/conversations", rg, config, db, wsStore)
 	messages.InitRoutes("/messages", rg, config, db, wsStore)
-	ws.Init("/ws", rg, config, db, wsStore)
+	ws.Init(wsrg, config, db, wsStore)
 }

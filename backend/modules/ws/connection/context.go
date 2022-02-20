@@ -21,6 +21,13 @@ func (c *Context) Send(event string, payload map[string]interface{}) {
 	})
 }
 
+func (c *Context) SendMessage(event string, payload string) {
+	c.SendJSON(map[string]interface{}{
+		"event":   event,
+		"payload": payload,
+	})
+}
+
 func (c *Context) SendErr(event string, code string) {
 	c.SendJSON(map[string]interface{}{
 		"event": event,

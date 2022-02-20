@@ -11,7 +11,7 @@ import (
 )
 
 type Controller struct {
-	Manager *connection.ConnStore
+	Store *connection.ConnStore
 }
 
 // Send a new message to a user
@@ -64,7 +64,7 @@ func (c *Controller) Send(payload interface{}, ctx *connection.Context) {
 		otherUserID = conversation.ToUserID
 	}
 
-	if con, err := c.Manager.Get(uint(otherUserID)); err == nil {
+	if con, err := c.Store.Get(uint(otherUserID)); err == nil {
 		con.Send("conversation/new_message", message.Transform())
 		message.Status = models.MessageStatusDelivered
 		ctx.DB.Save(&message)
@@ -97,7 +97,7 @@ func (c *Controller) Read(payload interface{}, ctx *connection.Context) {
 	records = ctx.DB.Debug().Model(&models.MessageModel{}).Where("conversation_id = ? AND ?=?", conversation.ID, otherUserColumn, otherUserID).Update("status", models.MessageStatusSeen)
 	fmt.Println(records)
 
-	if con, err := c.Manager.Get(otherUser.ID); err == nil {
+	if con, err := c.Store.Get(otherUser.ID); err == nil {
 		con.Send("conversation/seen", conversation.Transform())
 	}
 }

@@ -1,27 +1,27 @@
 package ws
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
-	"mchat.com/api/lib/jwt"
-	"mchat.com/api/middlewares"
 	"mchat.com/api/modules/ws/connection"
 )
 
-func Init(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
-	router := rg.Group(prefix)
+func Init(rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
+	router := rg.Group("/")
 
 	ctrl := WsController{
-		Upgrader: websocket.Upgrader{},
-		DB:       db,
-		Config:   config,
-	}
-	midd := middlewares.AuthMiddleware{
-		Jwt: &jwt.JwtService{Config: &config.Jwt},
-		DB:  db,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+		DB:     db,
+		Config: config,
 	}
 
-	router.GET("/connect", midd.Validate(jwt.AccessToken), ctrl.CreateConnection(wsStore))
+	router.GET("", ctrl.CreateConnection(wsStore))
 }
