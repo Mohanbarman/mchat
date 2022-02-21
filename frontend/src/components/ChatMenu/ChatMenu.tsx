@@ -15,10 +15,10 @@ import { IProps } from "./ChatMenu.types";
 export const ChatMenu: React.FC<IProps> = (props) => {
     return (
         <Box
-            padding="18px 16px"
+            padding="13px 12px"
             bg="gray.100"
             width="100%"
-            borderBottom="1px solid var(--chakra-colors-gray-300)"
+            borderBottom="1px solid var(--chakra-colors-gray-200)"
         >
             <Flex
                 direction="row"

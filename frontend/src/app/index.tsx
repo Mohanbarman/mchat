@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetMe } from "../api/hooks";
+import { useGetMe } from "../http";
 import { Router } from "./router";
 
 export const App = () => {

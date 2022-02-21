@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
-import { login } from "../../api/apis";
+import { login } from "../../http";
 import { actions } from "../../redux/auth/authSlice";
 import { handleFieldErrors } from "../../helpers/validation";
 import * as yup from "yup";

@@ -39,7 +39,7 @@ const SentTick = () => (
         <SingleTick />
     </Box>
 );
-const Message: React.FC<IMessageProps> = (props) => {
+export const Message: React.FC<IMessageProps> = (props) => {
     const time = props.time.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -107,5 +107,3 @@ const Message: React.FC<IMessageProps> = (props) => {
         </Box>
     );
 };
-
-export default Message;

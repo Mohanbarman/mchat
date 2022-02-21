@@ -22,6 +22,7 @@ export const Chat: React.FC<IProps> = (props) => {
             transition="all .3s"
             cursor="pointer"
             borderBottom="1px solid #0000000d"
+            onClick={() => props.onClick(props.id)}
         >
             <Flex
                 direction="row"

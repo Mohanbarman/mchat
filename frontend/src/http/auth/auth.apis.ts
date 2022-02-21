@@ -1,12 +1,9 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL as string,
-});
+import { AUTH } from "../constants";
+import api from "../instance";
 
 export const login = async (email: string, password: string) => {
     try {
-        const res = await api.post("/auth/login", { email, password });
+        const res = await api.post(AUTH.LOGIN, { email, password });
         return [res, null];
     } catch (e: any) {
         return [null, e.response];
@@ -22,18 +19,16 @@ interface IRegisterPayload {
 
 export const register = async (data: IRegisterPayload) => {
     try {
-        const res = await api.post("/auth/register", data);
+        const res = await api.post(AUTH.REGISTER, data);
         return [res, null];
     } catch (e: any) {
         return [null, e.response];
     }
 };
 
-export const getMe = async (token: string) => {
+export const getMe = async () => {
     try {
-        const res = await api.get("/auth/me", {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get(AUTH.GET_ME);
         return [res, null];
     } catch (e: any) {
         return [null, e.response];

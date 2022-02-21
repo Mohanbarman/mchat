@@ -2,7 +2,7 @@ import { useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-import * as api from "../../api/apis";
+import * as api from "../../http";
 import { handleFieldErrors } from "../../helpers/validation";
 import * as yup from "yup";
 

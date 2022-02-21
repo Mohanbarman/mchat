@@ -1,6 +1,6 @@
 import { Center, ChakraProvider } from "@chakra-ui/react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import Message from "./Message";
+import { Message } from "./Message";
 
 export default {
     title: "Components/Message",
@@ -17,7 +17,7 @@ const Template: ComponentStory<typeof Message> = (args) => (
 
 export const Text = Template.bind({});
 Text.args = {
-    id: '1',
+    id: "1",
     text: "Hello, How are you doing ?",
     type: "text",
     time: new Date(),
@@ -28,7 +28,7 @@ Text.args = {
 
 export const LongText = Template.bind({});
 LongText.args = {
-    id: '1',
+    id: "1",
     text: "Storybook helps you build UI components in isolation from your app's business logic, data, and context. That makes it easy to develop hard-to-reach states. Save these UI states as stories to revisit during development, testing, or QA. ",
     type: "text",
     time: new Date(),
