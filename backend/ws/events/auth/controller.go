@@ -2,23 +2,22 @@ package auth
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"mchat.com/api/lib/jwt"
+	"mchat.com/api/lib"
 	"mchat.com/api/models"
-	"mchat.com/api/modules/ws/connection"
 )
 
 type Controller struct {
-	Store *connection.ConnStore
-	Jwt   *jwt.JwtService
+	Store *lib.WsStore
+	Jwt   *lib.Jwt
 }
 
-func (c *Controller) Login(payload interface{}, ctx *connection.Context) {
+func (c *Controller) Login(payload interface{}, ctx *lib.WsContext) {
 	dto := LoginDTO{}
 	mapstructure.Decode(payload, &dto)
 
 	token := dto.Token
 
-	sub, err := c.Jwt.ParseToken(token, jwt.AccessToken)
+	sub, err := c.Jwt.ParseToken(token, lib.AccessToken)
 
 	if err != nil {
 		ctx.SendErr("auth/errors", "INVALID_TOKEN")

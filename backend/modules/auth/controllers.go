@@ -2,21 +2,13 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-	"mchat.com/api/config"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/jwt"
 	"mchat.com/api/models"
 	"mchat.com/api/validation"
 )
 
 type Controller struct {
-	Config     *config.Config
-	DB         *gorm.DB
-	Service    *Service
-	JwtService *jwt.JwtService
-	OtpSmtp    *lib.MailClient
-	Redis      *lib.RedisClient
+	Service *Service
 }
 
 func (ctrl *Controller) Login() gin.HandlerFunc {
@@ -26,7 +18,7 @@ func (ctrl *Controller) Login() gin.HandlerFunc {
 			return
 		}
 
-		data, err := ctrl.Service.Login(dto, ctrl.JwtService)
+		data, err := ctrl.Service.Login(dto)
 
 		if err != nil {
 			HttpErrors[err.Code].Send(c)
@@ -67,7 +59,7 @@ func (ctrl *Controller) SendResetPasswordMail() gin.HandlerFunc {
 		if ok := validation.ValidateReq(&dto, c); !ok {
 			return
 		}
-		go ctrl.Service.SendResetPasswordMail(dto, ctrl.OtpSmtp, ctrl.Redis)
+		go ctrl.Service.SendResetPasswordMail(dto)
 		HttpSuccess[ResetPassEmailSentSucccess].Send(c)
 	}
 }
@@ -78,7 +70,7 @@ func (ctrl *Controller) ResetPassword() gin.HandlerFunc {
 		if ok := validation.ValidateReq(&dto, c); !ok {
 			return
 		}
-		_, err := ctrl.Service.ResetPassword(dto, ctrl.Redis)
+		_, err := ctrl.Service.ResetPassword(dto)
 
 		if err != nil {
 			HttpErrors[err.Code].Send(c)

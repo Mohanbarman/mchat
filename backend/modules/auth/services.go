@@ -8,13 +8,15 @@ import (
 	"gorm.io/gorm"
 	"mchat.com/api/config"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/jwt"
 	"mchat.com/api/models"
 )
 
 type Service struct {
 	Config *config.Config
 	Db     *gorm.DB
+	Jwt    *lib.Jwt
+	Redis  *lib.RedisClient
+	Mail   *lib.MailClient
 }
 
 func (service *Service) Register(registerDto *RegisterDto) (result lib.H, e *lib.ServiceError) {
@@ -40,7 +42,7 @@ func (service *Service) Register(registerDto *RegisterDto) (result lib.H, e *lib
 	return
 }
 
-func (service Service) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (result lib.H, e *lib.ServiceError) {
+func (service Service) Login(loginDto *LoginDto) (result lib.H, e *lib.ServiceError) {
 	user := models.UserModel{}
 
 	records := service.Db.Find(&user, &models.UserModel{Email: loginDto.Email})
@@ -55,8 +57,8 @@ func (service Service) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (re
 		return
 	}
 
-	accessToken, aerr := jwtService.SignToken(user.UUID, jwt.AccessToken)
-	refreshToken, rerr := jwtService.SignToken(user.UUID, jwt.RefreshToken)
+	accessToken, aerr := service.Jwt.SignToken(user.UUID, lib.AccessToken)
+	refreshToken, rerr := service.Jwt.SignToken(user.UUID, lib.RefreshToken)
 
 	if aerr != nil || rerr != nil {
 		e = lib.Error(TokenGenerateErr)
@@ -69,30 +71,30 @@ func (service Service) Login(loginDto *LoginDto, jwtService *jwt.JwtService) (re
 	return
 }
 
-func (service *Service) SendResetPasswordMail(dto *ResetPasswordDTO, s *lib.MailClient, rdb *lib.RedisClient) {
+func (s *Service) SendResetPasswordMail(dto *ResetPasswordDTO) {
 	user := models.UserModel{}
-	userRecord := service.Db.First(&user, &models.UserModel{Email: dto.Email})
+	userRecord := s.Db.First(&user, &models.UserModel{Email: dto.Email})
 
 	if userRecord.RowsAffected > 0 {
 		hash := lib.GenRandomString([]byte(user.UUID))
-		rdb.Set(hash, user.UUID, time.Minute*15)
-		s.SendMail([]string{dto.Email}, "Test mail", fmt.Sprintf("localhost:8000/reset-password?id=%s", hash))
+		s.Redis.Set(hash, user.UUID, time.Minute*15)
+		s.Mail.SendMail([]string{dto.Email}, "Test mail", fmt.Sprintf("localhost:8000/reset-password?id=%s", hash))
 	}
 }
 
-func (service *Service) ResetPassword(dto *ResetPasswordChangeDTO, rdb *lib.RedisClient) (result lib.H, e *lib.ServiceError) {
-	uuid, err := rdb.Get(dto.Secret)
+func (s *Service) ResetPassword(dto *ResetPasswordChangeDTO) (result lib.H, e *lib.ServiceError) {
+	uuid, err := s.Redis.Get(dto.Secret)
 
 	if err != nil {
 		e = lib.Error(ResetPasswordLinkExpErr)
 		return
 	}
 
-	rdb.Remove(dto.Secret)
+	s.Redis.Remove(dto.Secret)
 
 	user := models.UserModel{}
 
-	records := service.Db.First(&user, &models.UserModel{UUID: uuid.(string)})
+	records := s.Db.First(&user, &models.UserModel{UUID: uuid.(string)})
 
 	if records.RowsAffected <= 0 {
 		e = lib.Error(UserNotFoundErr)
@@ -100,7 +102,7 @@ func (service *Service) ResetPassword(dto *ResetPasswordChangeDTO, rdb *lib.Redi
 	}
 
 	err = user.SetPassword(dto.Password)
-	service.Db.Save(&user)
+	s.Db.Save(&user)
 
 	if err != nil {
 		e = lib.Error(HashingPassErr)

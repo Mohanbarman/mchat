@@ -1,16 +1,15 @@
 package conversation
 
-import (
-	"mchat.com/api/modules/ws/connection"
-)
+import "mchat.com/api/lib"
 
-func HandleEvent(method string, payload interface{}, ctx *connection.Context, store *connection.ConnStore) {
+func HandleEvent(method string, payload interface{}, ctx *lib.WsContext, store *lib.WsStore) {
 	controller := Controller{
 		Store: store,
 	}
 
 	if ctx.User == nil {
 		ctx.SendMessage("auth/error", "UNAUTHORIZED")
+		return
 	}
 
 	switch method {

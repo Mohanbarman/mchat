@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"mchat.com/api/modules/ws/connection"
-	"mchat.com/api/modules/ws/events/auth"
-	"mchat.com/api/modules/ws/events/conversation"
+	"mchat.com/api/lib"
+	"mchat.com/api/ws/events/auth"
+	"mchat.com/api/ws/events/conversation"
 )
 
 type Event struct {
@@ -14,7 +14,7 @@ type Event struct {
 	Payload interface{} `json:"payload"`
 }
 
-func HandleEvent(e *Event, ctx *connection.Context, manager *connection.ConnStore) {
+func HandleEvent(e *Event, ctx *lib.WsContext, manager *lib.WsStore) {
 	action := strings.Split(e.Action, "/")
 
 	if len(action) < 2 {

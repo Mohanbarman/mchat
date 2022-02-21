@@ -1,4 +1,4 @@
-package jwt
+package lib
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"mchat.com/api/config"
 )
 
-type JwtService struct {
+type Jwt struct {
 	Config *config.JwtConfig
 }
 
@@ -20,7 +20,7 @@ const (
 	AccessToken  TokenType = "access_token"
 )
 
-func (s *JwtService) SignToken(sub string, t TokenType) (signedToken string, err error) {
+func (s *Jwt) SignToken(sub string, t TokenType) (signedToken string, err error) {
 	var exp int64
 	var scope string
 
@@ -43,7 +43,7 @@ func (s *JwtService) SignToken(sub string, t TokenType) (signedToken string, err
 	return
 }
 
-func (s *JwtService) ParseToken(tokenString string, t TokenType) (sub string, err error) {
+func (s *Jwt) ParseToken(tokenString string, t TokenType) (sub string, err error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
@@ -51,6 +51,11 @@ func (s *JwtService) ParseToken(tokenString string, t TokenType) (sub string, er
 
 		return []byte(s.Config.Secret), nil
 	})
+
+	if token == nil {
+		err = errors.New("invalid token")
+		return
+	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if claims["scope"].(string) != string(t) {

@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
+	"mchat.com/api/lib"
 	"mchat.com/api/modules/auth"
 	"mchat.com/api/modules/conversations"
 	"mchat.com/api/modules/messages"
-	"mchat.com/api/modules/ws"
-	"mchat.com/api/modules/ws/connection"
+	"mchat.com/api/ws"
 )
 
-func SetupRoutes(engine *gin.Engine, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
+func SetupRoutes(engine *gin.Engine, config *config.Config, db *gorm.DB, wsStore *lib.WsStore) {
 	rg := engine.Group("/api")
 	wsrg := engine.Group("/ws")
 

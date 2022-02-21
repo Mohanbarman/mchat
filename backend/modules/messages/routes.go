@@ -4,12 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
-	"mchat.com/api/lib/jwt"
+	"mchat.com/api/lib"
 	"mchat.com/api/middlewares"
-	"mchat.com/api/modules/ws/connection"
 )
 
-func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
+func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *lib.WsStore) {
 	router := rg.Group(prefix)
 
 	ctrl := Controller{
@@ -19,9 +18,9 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 	}
 
 	authMiddleware := middlewares.AuthMiddleware{
-		Jwt: &jwt.JwtService{Config: &config.Jwt},
+		Jwt: &lib.Jwt{Config: &config.Jwt},
 		DB:  db,
 	}
 
-	router.GET("/:conversation_id", authMiddleware.Validate(jwt.AccessToken), ctrl.GetAll())
+	router.GET("/:conversation_id", authMiddleware.Validate(lib.AccessToken), ctrl.GetAll())
 }

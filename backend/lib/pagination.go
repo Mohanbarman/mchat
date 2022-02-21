@@ -1,4 +1,4 @@
-package pagination
+package lib
 
 import (
 	"encoding/base64"
@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"gorm.io/gorm"
-	"mchat.com/api/lib"
 )
 
 type CursorPaginationDTO struct {
@@ -29,7 +28,7 @@ func CursorPaginate(tableName string, err *int, dto *CursorPaginationDTO, meta *
 	return func(db *gorm.DB) *gorm.DB {
 		rows := []records{}
 		cursor, e := decodeCursor(dto.Cursor)
-		limit := lib.MustGetInt(dto.Limit)
+		limit := MustGetInt(dto.Limit)
 
 		if e != nil {
 			(*err) = InvalidCursorErr

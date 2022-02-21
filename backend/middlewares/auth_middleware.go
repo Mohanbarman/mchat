@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/jwt"
 	"mchat.com/api/models"
 )
 
@@ -18,11 +17,11 @@ var unauthorizedErr = gin.H{
 }
 
 type AuthMiddleware struct {
-	Jwt *jwt.JwtService
+	Jwt *lib.Jwt
 	DB  *gorm.DB
 }
 
-func (a *AuthMiddleware) Validate(tokenType jwt.TokenType) gin.HandlerFunc {
+func (a *AuthMiddleware) Validate(tokenType lib.TokenType) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 

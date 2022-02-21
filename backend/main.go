@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"mchat.com/api/config"
 	"mchat.com/api/db"
+	"mchat.com/api/lib"
 	"mchat.com/api/middlewares"
-	"mchat.com/api/modules/ws/connection"
 	"mchat.com/api/router"
 	"mchat.com/api/validation"
 )
@@ -23,10 +23,10 @@ func main() {
 
 	r.Use(middlewares.Cors("*"))
 
-	ws := connection.NewStore()
+	wsStore := lib.NewWsStore()
 
 	validation.UseJsonKeyTagName()
-	router.SetupRoutes(r, config, db, ws)
+	router.SetupRoutes(r, config, db, wsStore)
 
 	r.Run(fmt.Sprintf(":%d", config.Server.Port))
 }

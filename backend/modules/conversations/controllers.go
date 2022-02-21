@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 	"mchat.com/api/config"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/pagination"
 	"mchat.com/api/models"
 	"mchat.com/api/validation"
 )
@@ -26,7 +25,7 @@ func (ctrl *Controller) GetAll() gin.HandlerFunc {
 
 		page, data, err := ctrl.Service.GetAll(&dto, user)
 
-		if err == pagination.InvalidCursorErr {
+		if err == lib.InvalidCursorErr {
 			lib.HttpResponse(400).Message("Invalid cursor").Send(c)
 			return
 		}

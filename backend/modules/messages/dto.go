@@ -1,7 +1,7 @@
 package messages
 
-import "mchat.com/api/lib/pagination"
+import "mchat.com/api/lib"
 
 type GetAllDTO struct {
-	pagination.CursorPaginationDTO
+	lib.CursorPaginationDTO
 }

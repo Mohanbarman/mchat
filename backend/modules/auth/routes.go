@@ -5,25 +5,22 @@ import (
 	"gorm.io/gorm"
 	"mchat.com/api/config"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/jwt"
 	"mchat.com/api/middlewares"
 )
 
 func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *gorm.DB) {
 	router := rg.Group(prefix)
 
-	jwtService := jwt.JwtService{Config: &config.Jwt}
+	jwtService := lib.Jwt{Config: &config.Jwt}
 
 	authCtrl := Controller{
-		Config: config,
-		DB:     db,
 		Service: &Service{
 			Config: config,
 			Db:     db,
+			Jwt:    &jwtService,
+			Redis:  lib.GetRedisClient("reset_password", &config.Redis),
+			Mail:   &lib.MailClient{Config: &config.SmtpOtp},
 		},
-		OtpSmtp:    &lib.MailClient{Config: &config.SmtpOtp},
-		Redis:      lib.GetRedisClient("reset_password", &config.Redis),
-		JwtService: &jwtService,
 	}
 
 	authMiddleware := middlewares.AuthMiddleware{
@@ -34,6 +31,6 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 	router.POST("/login", authCtrl.Login())
 	router.POST("/register", authCtrl.Register())
 	router.POST("/reset-password/send-mail", authCtrl.SendResetPasswordMail())
-	router.GET("/me", authMiddleware.Validate(jwt.AccessToken), authCtrl.GetMe())
+	router.GET("/me", authMiddleware.Validate(lib.AccessToken), authCtrl.GetMe())
 	router.POST("/reset-password", authCtrl.ResetPassword())
 }

@@ -3,14 +3,12 @@ package messages
 import (
 	"gorm.io/gorm"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/pagination"
 	"mchat.com/api/models"
-	"mchat.com/api/modules/ws/connection"
 )
 
 type Service struct {
 	DB *gorm.DB
-	WS *connection.ConnStore
+	WS *lib.WsStore
 }
 
 func (s *Service) GetAll(conversationId string, dto *GetAllDTO, user *models.UserModel) (page lib.H, data []map[string]interface{}, err int) {
@@ -23,11 +21,11 @@ func (s *Service) GetAll(conversationId string, dto *GetAllDTO, user *models.Use
 	page = map[string]interface{}{}
 
 	var pageErr int
-	scope := pagination.CursorPaginate("messages", &pageErr, &dto.CursorPaginationDTO, &page, true)
+	scope := lib.CursorPaginate("messages", &pageErr, &dto.CursorPaginationDTO, &page, true)
 	s.DB.Scopes(scope).Preload("FromUser").Preload("ToUser").Where("conversation_id = ?", conv.ID).Order("created_at desc").Find(&records)
 
 	if pageErr != 0 {
-		err = pagination.InvalidCursorErr
+		err = lib.InvalidCursorErr
 		return
 	}
 

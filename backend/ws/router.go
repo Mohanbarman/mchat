@@ -7,10 +7,10 @@ import (
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
-	"mchat.com/api/modules/ws/connection"
+	"mchat.com/api/lib"
 )
 
-func Init(rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *connection.ConnStore) {
+func Init(rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *lib.WsStore) {
 	router := rg.Group("/")
 
 	ctrl := WsController{

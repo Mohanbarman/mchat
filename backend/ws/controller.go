@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
-	"mchat.com/api/modules/ws/connection"
-	"mchat.com/api/modules/ws/events"
+	"mchat.com/api/lib"
+	"mchat.com/api/ws/events"
 )
 
 type WsController struct {
@@ -17,7 +17,7 @@ type WsController struct {
 	Config   *config.Config
 }
 
-func (ctrl *WsController) CreateConnection(manager *connection.ConnStore) gin.HandlerFunc {
+func (ctrl *WsController) CreateConnection(manager *lib.WsStore) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		c, err := ctrl.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 
@@ -25,14 +25,14 @@ func (ctrl *WsController) CreateConnection(manager *connection.ConnStore) gin.Ha
 			ctx.JSON(400, gin.H{
 				"success": false,
 				"code":    400,
-				"message": "Failed to upgrade connection to websocket",
+				"message": "Failed to upgrade lib to websocket",
 			})
 			return
 		}
 
 		defer c.Close()
 
-		context := connection.Context{
+		context := lib.WsContext{
 			Connection: c,
 			DB:         ctrl.DB,
 			Config:     ctrl.Config,

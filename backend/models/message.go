@@ -47,3 +47,15 @@ func (model *MessageModel) Transform() map[string]interface{} {
 func (model *MessageModel) TableName() string {
 	return "messages"
 }
+
+//
+// Scopes
+//
+
+// update status to seen of messages of user conversation
+func SeenConversationMessageStatus(conversationID uint, userCol string, userID uint) gormScope {
+	return func(d *gorm.DB) *gorm.DB {
+		d.Where("conversation_id = ? AND ?=?", conversationID, userCol, userID)
+		return d
+	}
+}

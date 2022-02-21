@@ -3,6 +3,8 @@ package models
 import (
 	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Base struct {
@@ -11,3 +13,5 @@ type Base struct {
 	UpdatedAt time.Time
 	DeletedAt sql.NullTime
 }
+
+type gormScope = func(*gorm.DB) *gorm.DB

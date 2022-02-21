@@ -4,7 +4,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"mchat.com/api/lib"
-	"mchat.com/api/lib/pagination"
 	"mchat.com/api/models"
 )
 
@@ -18,10 +17,10 @@ func (s *Service) GetAll(dto *GetAllDTO, user *models.UserModel) (page lib.H, da
 	data = []map[string]interface{}{}
 
 	pageErr := 0
-	scope := pagination.CursorPaginate("conversations", &pageErr, &dto.CursorPaginationDTO, &page, true)
-	s.DB.Scopes(scope).Where("from_user_id = ? OR to_user_id = ?", user.ID, user.ID).Preload(clause.Associations).Order("created_at desc").Find(&records)
+	scope := lib.CursorPaginate((&models.ConversationModel{}).TableName(), &pageErr, &dto.CursorPaginationDTO, &page, true)
+	s.DB.Scopes(models.FindAllUserConversations(user.ID)).Scopes(scope).Find(&records)
 
-	if pageErr == pagination.InvalidCursorErr {
+	if pageErr == lib.InvalidCursorErr {
 		err = pageErr
 		return
 	}
