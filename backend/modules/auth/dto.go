@@ -20,3 +20,7 @@ type ResetPasswordChangeDTO struct {
 type ResetPasswordDTO struct {
 	Email string `json:"email" form:"email" binding:"required,email,max=100"`
 }
+
+type RefreshTokenDTO struct {
+	Token string `json:"token" form:"token" binding:"required,jwt"`
+}

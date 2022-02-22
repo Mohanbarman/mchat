@@ -80,3 +80,21 @@ func (ctrl *Controller) ResetPassword() gin.HandlerFunc {
 		HttpSuccess[PassChangedSuccess].Send(c)
 	}
 }
+
+func (ctrl *Controller) RefreshToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		dto := &RefreshTokenDTO{}
+		if ok := validation.ValidateReq(dto, c); !ok {
+			return
+		}
+
+		data, err := ctrl.Service.RefreshToken(dto)
+
+		if err != nil {
+			HttpErrors[err.Code].Send(c)
+			return
+		}
+
+		lib.HttpResponse(200).Data(data).Send(c)
+	}
+}

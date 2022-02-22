@@ -110,3 +110,29 @@ func (s *Service) ResetPassword(dto *ResetPasswordChangeDTO) (result lib.H, e *l
 
 	return
 }
+
+func (s *Service) RefreshToken(dto *RefreshTokenDTO) (result lib.H, e *lib.ServiceError) {
+	token := dto.Token
+
+	sub, err := s.Jwt.ParseToken(token, lib.RefreshToken)
+
+	if err != nil {
+		e = &lib.ServiceError{Code: TokenExpireErr}
+		return
+	}
+
+	user := &models.UserModel{}
+	if records := s.Db.First(&user, "uuid=?", sub); records.RowsAffected < 1 {
+		e = &lib.ServiceError{Code: TokenExpireErr}
+		return
+	}
+
+	newAccessToken, err := s.Jwt.SignToken(user.UUID, lib.AccessToken)
+	if err != nil {
+		e = &lib.ServiceError{Code: TokenGenerateErr}
+		return
+	}
+
+	result = lib.H{"token": newAccessToken}
+	return
+}
