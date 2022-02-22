@@ -9,7 +9,7 @@ import (
 )
 
 type ConversationModel struct {
-	Base
+	BaseModel
 	UUID                string `gorm:"unique;not null"`
 	FromUserID          uint
 	FromUser            UserModel
@@ -22,13 +22,15 @@ type ConversationModel struct {
 }
 
 func (model *ConversationModel) Transform() map[string]interface{} {
-	return map[string]interface{}{
-		"id":              model.UUID,
-		"created_at":      model.CreatedAt,
-		"updated_at":      model.UpdatedAt,
-		"lastMessage":     model.LastMessageText,
-		"lastMessageTime": model.LastMessageTime.Time,
+	data := map[string]interface{}{
+		"id":                model.UUID,
+		"created_at":        model.CreatedAt,
+		"updated_at":        model.UpdatedAt,
+		"last_message":      model.LastMessageText,
+		"last_message_time": model.LastMessageTime.Time,
 	}
+
+	return data
 }
 
 func (model *ConversationModel) TableName() string {
@@ -58,7 +60,43 @@ func FindUserConversation(user1 uint, user2 uint) gormScope {
 // Get all conversations of the user
 func FindAllUserConversations(id uint) gormScope {
 	return func(d *gorm.DB) *gorm.DB {
-		d.Where("from_user_id = ? OR to_user_id = ?", id, id).Preload(clause.Associations).Order("created_at desc")
+		d.Where("from_user_id = ? OR to_user_id = ?", id, id).Preload(clause.Associations).Order("updated_at desc")
 		return d
 	}
+}
+
+//
+// helpers
+//
+
+func (model *ConversationModel) GetOtherUser(forUser uint) uint {
+	otherUser := model.FromUserID
+
+	if model.FromUserID == forUser {
+		otherUser = model.ToUserID
+	}
+
+	return otherUser
+}
+
+func (model *ConversationModel) TransformForUser(forUserID uint) map[string]interface{} {
+	data := map[string]interface{}{
+		"id":                model.UUID,
+		"created_at":        model.CreatedAt,
+		"updated_at":        model.UpdatedAt,
+		"last_message":      model.LastMessageText,
+		"last_message_time": model.LastMessageTime.Time,
+	}
+
+	if model.ToUserID == forUserID {
+		data["user"] = model.ToUser.Transform()
+		data["is_unread"] = model.ToUserUnreadCount > 0
+		data["unread_count"] = model.ToUserUnreadCount
+	} else {
+		data["user"] = model.FromUser.Transform()
+		data["is_unread"] = model.FromUserUnreadCount > 0
+		data["unread_count"] = model.FromUserUnreadCount
+	}
+
+	return data
 }
