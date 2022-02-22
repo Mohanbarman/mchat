@@ -4,7 +4,7 @@ import (
 	"mchat.com/api/lib"
 )
 
-func HandleEvent(method string, payload interface{}, ctx *lib.WsContext, manager *lib.WsStore) {
+func HandleEvent(method string, payload map[string]interface{}, ctx *lib.WsContext, manager *lib.WsStore) {
 	controller := Controller{
 		Store: manager,
 		Jwt: &lib.Jwt{

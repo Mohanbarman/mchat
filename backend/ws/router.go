@@ -11,7 +11,7 @@ import (
 )
 
 func Init(rg *gin.RouterGroup, config *config.Config, db *gorm.DB, wsStore *lib.WsStore) {
-	router := rg.Group("/")
+	router := rg.Group("")
 
 	ctrl := WsController{
 		Upgrader: websocket.Upgrader{

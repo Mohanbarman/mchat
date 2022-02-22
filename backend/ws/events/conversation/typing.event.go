@@ -5,7 +5,7 @@ import (
 	"mchat.com/api/models"
 )
 
-func (c *Controller) Typing(payload interface{}, ctx *lib.WsContext) {
+func (c *Controller) Typing(payload map[string]interface{}, ctx *lib.WsContext) {
 	dto := TypingEventDTO{}
 	if err := lib.ValidatePayload(&payload, &dto); err != nil {
 		return
@@ -20,7 +20,7 @@ func (c *Controller) Typing(payload interface{}, ctx *lib.WsContext) {
 
 	otherUserID := conversation.GetOtherUser(ctx.User.ID)
 
-	if con, err := c.Store.Get(otherUserID); err != nil {
-		con.Send("conversation/typing", conversation.UUID)
+	if con, err := c.Store.Get(otherUserID); err == nil {
+		con.Send("conversation/typing", lib.H{"id": conversation.UUID})
 	}
 }

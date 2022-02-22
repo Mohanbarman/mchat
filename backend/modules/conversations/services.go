@@ -26,12 +26,7 @@ func (s *Service) GetAll(dto *GetAllDTO, user *models.UserModel) (page lib.H, da
 	}
 
 	for i := range records {
-		r := records[i].Transform()
-		if records[i].FromUserID == user.ID {
-			r["user"] = records[i].ToUser.Transform()
-		} else {
-			r["user"] = records[i].FromUser.Transform()
-		}
+		r := records[i].TransformForUser(user.ID)
 		data = append(data, r)
 	}
 
@@ -46,12 +41,7 @@ func (s *Service) GetOne(conversationID string, user *models.UserModel) (data li
 		return
 	}
 
-	data = conversation.Transform()
-	if conversation.FromUserID == user.ID {
-		data["user"] = conversation.ToUser.Transform()
-	} else {
-		data["user"] = conversation.FromUser.Transform()
-	}
+	data = conversation.TransformForUser(user.ID)
 
 	return
 }

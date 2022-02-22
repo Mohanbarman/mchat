@@ -40,14 +40,5 @@ func (s *Service) GetAll(conversationId string, dto *GetAllDTO, user *models.Use
 		data = append(data, d)
 	}
 
-	otherUserID := conv.FromUserID
-	if conv.FromUserID == user.ID {
-		otherUserID = conv.ToUserID
-	}
-
-	if conn, err := s.WS.Get(otherUserID); err == nil {
-		conn.Send("conversation/seen", conv.Transform())
-	}
-
 	return
 }

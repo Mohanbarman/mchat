@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Base struct {
+type BaseModel struct {
 	ID        uint      `gorm:"primarykey"`
 	CreatedAt time.Time `gorm:"index"`
 	UpdatedAt time.Time

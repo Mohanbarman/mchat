@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"mchat.com/api/lib"
 	"mchat.com/api/models"
 )
@@ -11,9 +10,11 @@ type Controller struct {
 	Jwt   *lib.Jwt
 }
 
-func (c *Controller) Login(payload interface{}, ctx *lib.WsContext) {
+func (c *Controller) Login(payload map[string]interface{}, ctx *lib.WsContext) {
 	dto := LoginDTO{}
-	mapstructure.Decode(payload, &dto)
+	if err := lib.ValidatePayload(&payload, &dto); err != nil {
+		return
+	}
 
 	token := dto.Token
 

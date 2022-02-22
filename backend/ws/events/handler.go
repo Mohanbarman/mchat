@@ -10,8 +10,8 @@ import (
 )
 
 type Event struct {
-	Action  string      `json:"action"`
-	Payload interface{} `json:"payload"`
+	Action  string                 `json:"action"`
+	Payload map[string]interface{} `json:"payload"`
 }
 
 func HandleEvent(e *Event, ctx *lib.WsContext, manager *lib.WsStore) {
