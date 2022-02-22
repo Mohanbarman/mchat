@@ -2,7 +2,7 @@ package conversation
 
 import "mchat.com/api/lib"
 
-func HandleEvent(method string, payload interface{}, ctx *lib.WsContext, store *lib.WsStore) {
+func HandleEvent(method string, payload map[string]interface{}, ctx *lib.WsContext, store *lib.WsStore) {
 	controller := Controller{
 		Store: store,
 	}
@@ -17,5 +17,7 @@ func HandleEvent(method string, payload interface{}, ctx *lib.WsContext, store *
 		controller.Send(payload, ctx)
 	case "read":
 		controller.Read(payload, ctx)
+	case "typing":
+		controller.Typing(payload, ctx)
 	}
 }
