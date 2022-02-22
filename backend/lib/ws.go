@@ -3,7 +3,9 @@ package lib
 import (
 	"errors"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/websocket"
+	"github.com/mitchellh/mapstructure"
 	"gorm.io/gorm"
 	"mchat.com/api/config"
 	"mchat.com/api/models"
@@ -17,7 +19,7 @@ type WsContext struct {
 	Config     *config.Config
 }
 
-func (c *WsContext) Send(event string, payload map[string]interface{}) {
+func (c *WsContext) Send(event string, payload interface{}) {
 	c.SendJSON(map[string]interface{}{
 		"event":   event,
 		"payload": payload,
@@ -81,4 +83,12 @@ func NewWsStore() *WsStore {
 	return &WsStore{
 		connections: make(map[uint]*websocket.Conn),
 	}
+}
+
+// helpers
+func ValidatePayload(src interface{}, dst interface{}) (err error) {
+	mapstructure.Decode(src, dst)
+	validate := validator.New()
+	err = validate.Struct(dst)
+	return
 }
