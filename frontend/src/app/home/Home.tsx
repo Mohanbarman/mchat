@@ -6,8 +6,7 @@ import { Inbox } from "./Inbox";
 import { MesssageArea } from "./MessageArea";
 
 export const Home = () => {
-    const { user } = useAppSelector((s) => s.authReducer);
-    const [conversation, setConversation] = React.useState("");
+    const { user } = useAppSelector((s) => s.auth);
 
     if (!user) {
         return <></>;
@@ -22,10 +21,10 @@ export const Home = () => {
                 borderRight="2px solid var(--chakra-colors-gray-300)"
             >
                 <ChatMenu profile={user.profile} />
-                <Inbox onClick={(id) => setConversation(id)} />
+                <Inbox />
             </Box>
             <Box flex={4} bg="gray.50">
-                <MesssageArea selectedConversation={conversation} />
+                <MesssageArea />
             </Box>
         </Flex>
     );

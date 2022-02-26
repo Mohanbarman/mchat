@@ -47,33 +47,26 @@ export const Message: React.FC<IMessageProps> = (props) => {
     const direction = props.isMe ? "right" : "left";
     const bg = props.isMe ? "teal.100" : "teal.50";
 
-    console.log(props)
-
     return (
         <Box
             bg={bg}
             borderRadius="10px"
-            onClick={() => props.onClick(props.id)}
             padding="7px 10px"
             display="inline-block"
             float={direction}
             position="relative"
             boxShadow="#00000036 0px 1px 2px"
             maxW="600px"
+            alignSelf={props.isMe ? "flex-end" : "flex-start"}
             {...{
-                [props.isMe ? "borderTopRightRadius" : "borderTopLeftRadius"]:
-                    "0",
+                [props.isMe ? "borderTopRightRadius" : "borderTopLeftRadius"]: "0",
             }}
         >
             <Text fontSize="0.9rem" fontWeight="medium" whiteSpace="pre-wrap">
-                    {props.text}
+                {props.text}
             </Text>
             <Box display="flex" justifyContent="flex-end">
-                <Text
-                    fontSize="0.75rem"
-                    fontWeight="medium"
-                    color="blackAlpha.600"
-                >
+                <Text fontSize="0.75rem" fontWeight="medium" color="blackAlpha.600">
                     {time}
                 </Text>
                 {props.isMe && (
@@ -94,14 +87,8 @@ export const Message: React.FC<IMessageProps> = (props) => {
                 transform={props.isMe ? "unset" : "scaleX(-1)"}
             >
                 <svg viewBox="0 0 8 13" width="8" height="13">
-                    <path
-                        opacity=".13"
-                        d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
-                    ></path>
-                    <path
-                        fill="currentColor"
-                        d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
-                    ></path>
+                    <path opacity=".13" d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"></path>
+                    <path fill="currentColor" d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"></path>
                 </svg>
             </Box>
         </Box>

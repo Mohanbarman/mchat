@@ -2,6 +2,7 @@ package messages
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"mchat.com/api/lib"
 	"mchat.com/api/models"
 )
@@ -22,7 +23,7 @@ func (s *Service) GetAll(conversationId string, dto *GetAllDTO, user *models.Use
 
 	var pageErr int
 	scope := lib.CursorPaginate("messages", &pageErr, &dto.CursorPaginationDTO, &page, true)
-	s.DB.Scopes(scope).Preload("FromUser").Preload("ToUser").Where("conversation_id = ?", conv.ID).Order("created_at desc").Find(&records)
+	s.DB.Scopes(scope).Preload(clause.Associations).Where("conversation_id = ?", conv.ID).Order("created_at desc").Find(&records)
 
 	if pageErr != 0 {
 		err = lib.InvalidCursorErr

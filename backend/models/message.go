@@ -60,3 +60,18 @@ func SeenConversationMessageStatus(conversationID uint, userCol string, userID u
 		return d
 	}
 }
+
+//
+// Helpers
+//
+func (model *MessageModel) TransformForUser(id int) map[string]interface{} {
+	return map[string]interface{}{
+		"id":           model.ID,
+		"is_me":        model.FromUserID == id,
+		"text":         model.Text,
+		"file_id":      model.FileID.Int64,
+		"created_at":   model.CreatedAt,
+		"status":       model.Status,
+		"conversation": model.Conversation.UUID,
+	}
+}

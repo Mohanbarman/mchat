@@ -7,3 +7,7 @@ export const AUTH = {
 export const CONVERSATIONS = {
     GET_ALL: "/conversations",
 };
+
+export const MESSAGES = {
+    GET_ALL: (id: string) => `/messages/${id}`,
+};

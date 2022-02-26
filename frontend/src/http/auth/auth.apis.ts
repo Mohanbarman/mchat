@@ -1,36 +1,41 @@
 import { AUTH } from "../constants";
 import api from "../instance";
+import {
+    IGetMeResponse,
+    ILoginPayload,
+    ILoginResponse,
+    IRegisterPayload,
+    IRegisterResponse,
+    IReturn,
+} from "./auth.types";
 
-export const login = async (email: string, password: string) => {
+export const login = async (
+    payload: ILoginPayload
+): IReturn<ILoginResponse> => {
     try {
-        const res = await api.post(AUTH.LOGIN, { email, password });
-        return [res, null];
+        const res = await api.post(AUTH.LOGIN, payload);
+        return { success: res };
     } catch (e: any) {
-        return [null, e.response];
+        return { error: e.response };
     }
 };
 
-interface IRegisterPayload {
-    name: string;
-    email: string;
-    password: string;
-    status: string;
-}
-
-export const register = async (data: IRegisterPayload) => {
+export const register = async (
+    data: IRegisterPayload
+): IReturn<IRegisterResponse> => {
     try {
         const res = await api.post(AUTH.REGISTER, data);
-        return [res, null];
+        return { success: res };
     } catch (e: any) {
-        return [null, e.response];
+        return { error: e.response };
     }
 };
 
-export const getMe = async () => {
+export const getMe = async (): IReturn<IGetMeResponse> => {
     try {
         const res = await api.get(AUTH.GET_ME);
-        return [res, null];
+        return { success: res };
     } catch (e: any) {
-        return [null, e.response];
+        return { error: e.response };
     }
 };

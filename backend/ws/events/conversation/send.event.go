@@ -77,9 +77,11 @@ func (c *Controller) Send(payload map[string]interface{}, ctx *lib.WsContext) {
 	// updating the row in table
 	ctx.DB.Save(&conversation)
 
+	ctx.Send("conversation/sent", message.TransformForUser(int(ctx.User.ID)))
+
 	// sending events to other user if user is connected
-	if con, err := c.Store.Get(uint(otherUserID)); err == nil {
-		con.Send("conversation/new_message", message.Transform())
+	if con, err := c.Store.Get(otherUserID); err == nil {
+		con.Send("conversation/new_message", message.TransformForUser(int(otherUserID)))
 
 		message.Status = models.MessageStatusDelivered
 		ctx.DB.Save(&message)

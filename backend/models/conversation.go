@@ -88,14 +88,14 @@ func (model *ConversationModel) TransformForUser(forUserID uint) map[string]inte
 		"last_message_time": model.LastMessageTime.Time,
 	}
 
-	if model.ToUserID == forUserID {
+	if model.FromUserID == forUserID {
 		data["user"] = model.ToUser.Transform()
-		data["is_unread"] = model.ToUserUnreadCount > 0
-		data["unread_count"] = model.ToUserUnreadCount
-	} else {
-		data["user"] = model.FromUser.Transform()
 		data["is_unread"] = model.FromUserUnreadCount > 0
 		data["unread_count"] = model.FromUserUnreadCount
+	} else {
+		data["user"] = model.FromUser.Transform()
+		data["is_unread"] = model.ToUserUnreadCount > 0
+		data["unread_count"] = model.ToUserUnreadCount
 	}
 
 	return data

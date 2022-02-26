@@ -9,11 +9,11 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { Container } from "./Container";
-import {useLogin} from './useLogin';
+import { useAppLogin } from "./useAppLogin";
 import React from "react";
 
 export const Login = () => {
-    const {errors, loading, onSubmit, registerField} = useLogin()
+    const { errors, loading, onSubmit, registerField } = useAppLogin();
 
     const [show, setShow] = React.useState(false);
     const handleClick = () => setShow(!show);

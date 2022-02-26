@@ -1,39 +1,35 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { useGetConversations } from "../../http";
 import { Chat } from "../../components";
-import { useWsClient } from "../../ws";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { actions } from "../../redux/conversations/conversationSlice";
+import React from "react";
 
 interface IProps {
-    onClick: (value: string) => any
 }
 
 export const Inbox: React.FC<IProps> = (props) => {
-    const { data, isLoading } = useGetConversations();
-    const { ws, isConnected } = useWsClient();
+    const { data } = useGetConversations();
+    const { data: conversations } = useAppSelector((s) => s.conversations);
+    const dispatch = useAppDispatch();
 
-    // useEffect(() => {
-    //     if (isConnected) {
-    //         ws.sendMessage({
-    //             text: "Heloo world",
-    //             userID: "3e0887fe-7a97-4cde-8aed-797397bd9724",
-    //         });
-    //     }
-    // }, [isConnected]);
+    React.useEffect(() => {
+        if (data) dispatch(actions.set(data));
+    }, [data]);
 
     return (
         <Box>
-            {data.map((i: any) => (
+            {Object.values(conversations).map((i) => (
                 <Chat
                     key={i.id}
                     id={i.id}
                     avatar={i.user.profile}
                     name={i.user.name}
-                    messageTime={new Date(i.created_at).getTime()}
-                    isUnread={false}
-                    message="Hello world"
-                    unreadCount={1}
-                    onClick={props.onClick}
+                    messageTime={(new Date(i.last_message_time)).getTime()}
+                    isUnread={i.is_unread}
+                    message={i.last_message}
+                    unreadCount={i.unread_count}
+                    onClick={(id) => dispatch(actions.setActive(id))}
                 />
             ))}
         </Box>

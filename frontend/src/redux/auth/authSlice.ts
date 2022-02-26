@@ -6,6 +6,7 @@ export interface IAuthState {
     isAuthenticated: boolean;
     user?: IUser;
     accessToken?: string;
+    refreshToken?: string;
 }
 
 const getInitialState = (): IAuthState => {
@@ -16,15 +17,18 @@ const getInitialState = (): IAuthState => {
 
     const userString = localStorage.getItem("user");
     const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
 
-    if (!userString || !accessToken) {
+    if (!userString || !accessToken || !refreshToken) {
         return state;
     }
 
     const user = JSON.parse(userString);
+
     state.isAuthenticated = true;
     state.user = user;
     state.accessToken = accessToken;
+    state.refreshToken = refreshToken;
 
     return state;
 };
@@ -58,6 +62,10 @@ export const authSlice = createSlice({
         setAccessToken: (state, action: PayloadAction<string>) => {
             state.accessToken = action.payload;
             localStorage.setItem("accessToken", state.accessToken);
+        },
+        setRefreshToken: (state, action: PayloadAction<string>) => {
+            state.refreshToken = action.payload;
+            localStorage.setItem("refreshToken", state.refreshToken);
         },
     },
 });

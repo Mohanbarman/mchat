@@ -2,7 +2,7 @@ import { useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-import * as api from "../../http";
+import { register } from "../../http";
 import { handleFieldErrors } from "../../helpers/validation";
 import * as yup from "yup";
 
@@ -14,7 +14,9 @@ const schema = yup.object().shape({
         .required()
         .min(8, "password must be greater than 8 characters")
         .max(50, "password must be smaller than 50 characters"),
-    confirmPassword: yup.string().oneOf([yup.ref("password")], "Password didn't matched"),
+    confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], "Password didn't matched"),
 });
 
 interface IForm {
@@ -26,7 +28,7 @@ interface IForm {
 
 export const useRegister = () => {
     const {
-        register,
+        register: registerField,
         handleSubmit,
         formState: { errors, isSubmitting },
         setError,
@@ -36,14 +38,14 @@ export const useRegister = () => {
     const navigate = useNavigate();
 
     const onSubmit = async (data: IForm) => {
-        const [_, err] = await api.register({
+        const { error } = await register({
             email: data.email,
             name: data.name,
             password: data.password,
             status: "Hey there I'm using Mchat",
         });
-        if (err) {
-            handleFieldErrors(err.data.errors, setError);
+        if (error && error.data.errors) {
+            handleFieldErrors(error.data.errors, setError);
             return;
         }
         toast({
@@ -57,7 +59,7 @@ export const useRegister = () => {
     };
 
     return {
-        registerField: register,
+        registerField,
         onSubmit: handleSubmit(onSubmit),
         errors,
         loading: isSubmitting,

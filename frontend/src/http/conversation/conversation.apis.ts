@@ -1,13 +1,20 @@
+import { IReturn } from "../auth/auth.types";
 import { CONVERSATIONS } from "../constants";
 import api from "../instance";
+import {
+    IGetConversationPayload,
+    IGetConversationsResponse,
+} from "./conversation.types";
 
-export const getConversations = async (limit: number, cursor: string) => {
+export const getConversations = async (
+    payload: IGetConversationPayload
+): IReturn<IGetConversationsResponse[]> => {
     try {
         const res = await api.get(CONVERSATIONS.GET_ALL, {
-            params: { limit, cursor },
+            params: payload,
         });
-        return [res, null];
+        return { success: res };
     } catch (e: any) {
-        return [null, e.response];
+        return { error: e.response };
     }
 };
