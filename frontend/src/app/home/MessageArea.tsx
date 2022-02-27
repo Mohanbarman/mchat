@@ -53,25 +53,29 @@ export const MesssageArea: React.FC = () => {
         <Flex direction="column" position="relative" height="100%">
             <ChatMenu profile={user.profile} />
             <Flex flex="1" justifyContent="flex-end" direction="column">
-                <Box
-                    maxH="calc(100vh - (75px + 64px))"
-                    display="flex"
-                    flexDir="column"
-                    padding="10px 30px"
-                    overflow="auto"
-                    gap="15px"
-                    id="messages-container"
-                >
-                    {conversationMessages.map((i) => (
-                        <Message
-                            id={i.id}
-                            isMe={i.is_me}
-                            state={status[i.status]}
-                            text={i.text}
-                            time={new Date(i.created_at)}
-                            type="text"
-                        />
-                    ))}
+                <Box height="100%" position="relative" overflowY="scroll" overflowX="hidden">
+                    <Box
+                        position="absolute"
+                        top="0"
+                        left="0"
+                        display="flex"
+                        flexDir="column"
+                        padding="10px 30px"
+                        gap="15px"
+                        id="messages-container"
+                        width="100%"
+                    >
+                        {conversationMessages.map((i) => (
+                            <Message
+                                id={i.id}
+                                isMe={i.is_me}
+                                state={status[i.status]}
+                                text={i.text}
+                                time={new Date(i.created_at)}
+                                type="text"
+                            />
+                        ))}
+                    </Box>
                 </Box>
             </Flex>
             <Box>
