@@ -21,6 +21,16 @@ export class WsClient {
         this.sendJson(data);
     }
 
+    readConversation(payload: string) {
+        const data = {
+            action: "conversation/read",
+            payload: {
+                conversation_id: payload,
+            },
+        };
+        this.sendJson(data);
+    }
+
     login(token: string) {
         const data = {
             action: "auth/login",
