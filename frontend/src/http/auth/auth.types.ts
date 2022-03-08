@@ -27,4 +27,8 @@ export interface ILoginResponse extends IUser {
 export interface IRegisterResponse extends IUser {}
 export interface IGetMeResponse extends IUser {}
 
+export interface IRefreshTokenResponse {
+    token: string
+}
+
 export type IReturn<T> = Promise<IApiResponse<T>>;

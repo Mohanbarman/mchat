@@ -9,7 +9,7 @@ import { ILoginPayload, ILoginResponse, IRegisterPayload } from "./auth.types";
 
 export const useLogin = () => {
     const [isLoading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>();
+    const [errors, setErrors] = useState<Record<string, string[]>>();
     const [data, setData] = useState<ILoginResponse>();
 
     const execute = async (payload: ILoginPayload) => {
@@ -28,7 +28,7 @@ export const useLogin = () => {
 
 export const useRegister = () => {
     const [isLoading, setLoading] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>();
+    const [errors, setErrors] = useState<Record<string, string[]>>();
     const [data, setData] = useState<IUser>();
 
     const execute = async (payload: IRegisterPayload) => {
@@ -52,10 +52,7 @@ export const useGetMe = () => {
     const toast = useToast();
 
     const execute = async () => {
-        if (
-            (!authState.isAuthenticated && !authState.isLoading) ||
-            authState.accessToken === undefined
-        ) {
+        if ((!authState.isAuthenticated && !authState.isLoading) || authState.accessToken === undefined) {
             navigate("/login");
             dispatch(actions.unauthenticate());
             return;
@@ -73,7 +70,7 @@ export const useGetMe = () => {
                 description: "Please try again later",
                 duration: 5000,
                 status: "error",
-                title: "Something went wrong",
+                title: "Session expired",
             });
             return;
         }

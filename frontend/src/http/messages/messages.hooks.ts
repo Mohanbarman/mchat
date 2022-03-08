@@ -12,7 +12,7 @@ export const useGetMessages = () => {
     const execute = async (conversationId: string) => {
         setLoading(true);
         const { success, error } = await getMessages({
-            limit: 10,
+            limit: 20,
             cursor: cursor,
             conversationId,
         });

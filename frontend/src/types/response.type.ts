@@ -9,7 +9,7 @@ export interface IResponse<T> {
 
 export interface IErrorResponse {
     code: number;
-    errors?: Record<string, string>;
+    errors?: Record<string, string[]>;
     success: boolean;
     message?: string;
 }

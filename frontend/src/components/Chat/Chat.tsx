@@ -32,6 +32,7 @@ export const Chat: React.FC<IProps> = (props) => {
                 <Flex direction="row" gap="20px">
                     <Avatar
                         src={props.avatar}
+                        name={props.name}
                         width="60px"
                         height="60px"
                         borderRadius="50%"

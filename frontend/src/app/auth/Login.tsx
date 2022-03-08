@@ -70,7 +70,7 @@ export const Login = () => {
                     >
                         Submit
                     </Button>
-                    <Link to="register">
+                    <Link to="/register">
                         <Button w="100%" mt="30px">
                             Create an account
                         </Button>

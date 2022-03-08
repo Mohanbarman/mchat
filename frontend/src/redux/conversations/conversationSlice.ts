@@ -32,9 +32,7 @@ export const conversationSlice = createSlice({
             state.data.unshift(data);
         },
         update: (state, action: PayloadAction<IConversation>) => {
-            const index = state.data.findIndex(
-                (i) => i.id === action.payload.id
-            );
+            const index = state.data.findIndex((i) => i.id === action.payload.id);
             if (index === -1) return;
             const data = { ...action.payload, is_typing: false };
             state.data[index] = data;
@@ -42,15 +40,11 @@ export const conversationSlice = createSlice({
         setActive: (state, action: PayloadAction<string>) => {
             const index = state.data.findIndex((i) => i.id === action.payload);
             if (index === -1) return;
+            if (state.active?.id === action.payload) return;
             state.active = state.data[index];
         },
-        setTyping: (
-            state,
-            action: PayloadAction<{ id: string; value: boolean }>
-        ) => {
-            const index = state.data.findIndex(
-                (i) => i.id === action.payload.id
-            );
+        setTyping: (state, action: PayloadAction<{ id: string; value: boolean }>) => {
+            const index = state.data.findIndex((i) => i.id === action.payload.id);
             if (index === -1) return;
             state.data[index].is_typing = action.payload.value;
         },

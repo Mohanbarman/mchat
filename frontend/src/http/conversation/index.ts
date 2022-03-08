@@ -1,2 +1,2 @@
 export { useGetConversations } from "./conversation.hooks";
-export { getConversations } from "./conversation.apis";
+export { getConversations, createConversation } from "./conversation.apis";

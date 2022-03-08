@@ -51,9 +51,9 @@ export const MesssageArea: React.FC = () => {
 
     return (
         <Flex direction="column" position="relative" height="100%">
-            <ChatMenu profile={user.profile} />
+            <ChatMenu onAddUser={console.log} profile={user.profile} />
             <Flex flex="1" justifyContent="flex-end" direction="column">
-                <Box height="100%" position="relative" overflowY="scroll" overflowX="hidden">
+                <Box height="100%" id="messages-container" position="relative" overflowY="scroll" overflowX="hidden">
                     <Box
                         position="absolute"
                         top="0"
@@ -62,11 +62,11 @@ export const MesssageArea: React.FC = () => {
                         flexDir="column"
                         padding="10px 30px"
                         gap="15px"
-                        id="messages-container"
                         width="100%"
                     >
                         {conversationMessages.map((i) => (
                             <Message
+                                key={i.id}
                                 id={i.id}
                                 isMe={i.is_me}
                                 state={status[i.status]}
