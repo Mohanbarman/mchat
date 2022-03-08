@@ -60,7 +60,7 @@ func FindUserConversation(user1 uint, user2 uint) gormScope {
 // Get all conversations of the user
 func FindAllUserConversations(id uint) gormScope {
 	return func(d *gorm.DB) *gorm.DB {
-		d.Where("from_user_id = ? OR to_user_id = ?", id, id).Preload(clause.Associations).Order("updated_at desc")
+		d.Where("from_user_id = ? OR to_user_id = ?", id, id).Preload(clause.Associations).Order("last_message_time desc")
 		return d
 	}
 }
