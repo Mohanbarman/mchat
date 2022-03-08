@@ -28,7 +28,7 @@ func (s *Jwt) SignToken(sub string, t TokenType) (signedToken string, err error)
 		exp = time.Now().UTC().Add(time.Hour * 24 * time.Duration(s.Config.RefreshTokenExpDays)).Unix()
 		scope = "refresh_token"
 	} else {
-		exp = time.Now().UTC().Add(time.Hour * 24 * time.Duration(s.Config.AccessTokenExpDays)).Unix()
+		exp = time.Now().UTC().Add(time.Hour * 2).Unix()
 		scope = "access_token"
 	}
 

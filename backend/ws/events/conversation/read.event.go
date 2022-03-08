@@ -7,7 +7,7 @@ import (
 )
 
 // Mark conversation as read
-func (c *Controller) Read(payload interface{}, ctx *lib.WsContext) {
+func (c *Controller) Read(payload map[string]interface{}, ctx *lib.WsContext) {
 	dto := ReadConversationDTO{}
 	if err := lib.ValidatePayload(&payload, &dto); err != nil {
 		return
@@ -38,7 +38,7 @@ func (c *Controller) Read(payload interface{}, ctx *lib.WsContext) {
 	ctx.DB.Save(&conversation)
 
 	if con, err := c.Store.Get(otherUser.ID); err == nil {
-		con.Send("conversation/seen", conversation.TransformForUser(otherUserID))
+		con.Send("message/seen", conversation.TransformForUser(otherUserID))
 	}
 	ctx.Send("conversation/update", conversation.TransformForUser(ctx.User.ID))
 }

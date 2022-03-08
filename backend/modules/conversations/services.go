@@ -45,3 +45,31 @@ func (s *Service) GetOne(conversationID string, user *models.UserModel) (data li
 
 	return
 }
+
+func (s *Service) Create(dto *CreateDTO, user *models.UserModel) (data lib.H, err *lib.ServiceError) {
+	otherUser := models.UserModel{}
+
+	if records := s.DB.Find(&otherUser, &models.UserModel{Email: dto.Email}); records.RowsAffected < 1 {
+		err = &lib.ServiceError{Code: UserNotFoundErr}
+		return
+	}
+
+	if record := s.DB.Scopes(models.FindUserConversation(user.ID, otherUser.ID)).Find(&models.ConversationModel{}); record.RowsAffected > 0 {
+		err = &lib.ServiceError{Code: AlreadyExistsErr}
+		return
+	}
+
+	conversation := models.ConversationModel{
+		FromUserID: user.ID,
+		ToUserID:   otherUser.ID,
+	}
+
+	s.DB.Save(&conversation)
+
+	newConversation := &models.ConversationModel{}
+
+	s.DB.Preload(clause.Associations).Find(&newConversation, conversation.ID)
+
+	data = newConversation.TransformForUser(user.ID)
+	return
+}

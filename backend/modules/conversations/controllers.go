@@ -48,3 +48,22 @@ func (ctrl *Controller) GetOne() gin.HandlerFunc {
 		lib.HttpResponse(200).Data(data).Send(c)
 	}
 }
+
+func (ctrl *Controller) Create() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		dto := &CreateDTO{}
+		user := c.MustGet("user").(*models.UserModel)
+		if ok := validation.ValidateReq(dto, c); !ok {
+			return
+		}
+
+		data, err := ctrl.Service.Create(dto, user)
+
+		if err != nil {
+			HttpErrors[err.Code].Send(c)
+			return
+		}
+
+		lib.HttpResponse(200).Data(data).Send(c)
+	}
+}

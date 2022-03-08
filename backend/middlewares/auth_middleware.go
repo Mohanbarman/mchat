@@ -21,7 +21,7 @@ type AuthMiddleware struct {
 	DB  *gorm.DB
 }
 
-func (a *AuthMiddleware) Validate(tokenType lib.TokenType) gin.HandlerFunc {
+func (a *AuthMiddleware) Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -44,7 +44,7 @@ func (a *AuthMiddleware) Validate(tokenType lib.TokenType) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, unauthorizedErr)
 		}
 
-		sub, err := a.Jwt.ParseToken(token, tokenType)
+		sub, err := a.Jwt.ParseToken(token, lib.AccessToken)
 
 		if err != nil {
 			c.JSON(401, gin.H{

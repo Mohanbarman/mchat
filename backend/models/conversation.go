@@ -15,10 +15,10 @@ type ConversationModel struct {
 	FromUser            UserModel
 	ToUserID            uint
 	ToUser              UserModel
-	FromUserUnreadCount uint
-	ToUserUnreadCount   uint
+	FromUserUnreadCount uint `gorm:"default:0"`
+	ToUserUnreadCount   uint `gorm:"default:0"`
 	LastMessageText     string
-	LastMessageTime     sql.NullTime
+	LastMessageTime     sql.NullTime `gorm:"autoCreateTime"`
 }
 
 func (model *ConversationModel) Transform() map[string]interface{} {

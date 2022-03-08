@@ -31,7 +31,7 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 	router.POST("/login", authCtrl.Login())
 	router.POST("/register", authCtrl.Register())
 	router.POST("/reset-password/send-mail", authCtrl.SendResetPasswordMail())
-	router.GET("/me", authMiddleware.Validate(lib.AccessToken), authCtrl.GetMe())
+	router.GET("/me", authMiddleware.Validate(), authCtrl.GetMe())
 	router.POST("/reset-password", authCtrl.ResetPassword())
 	router.POST("/refresh-token", authCtrl.RefreshToken())
 }

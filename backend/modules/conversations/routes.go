@@ -21,14 +21,7 @@ func InitRoutes(prefix string, rg *gin.RouterGroup, config *config.Config, db *g
 		DB:  db,
 	}
 
-	router.GET(
-		"",
-		authMiddleware.Validate(lib.AccessToken),
-		ctrl.GetAll(),
-	)
-	router.GET(
-		"/:conversation_id",
-		authMiddleware.Validate(lib.AccessToken),
-		ctrl.GetOne(),
-	)
+	router.GET("", authMiddleware.Validate(), ctrl.GetAll())
+	router.GET("/:conversation_id", authMiddleware.Validate(), ctrl.GetOne())
+	router.POST("", authMiddleware.Validate(), ctrl.Create())
 }
